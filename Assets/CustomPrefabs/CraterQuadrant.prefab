@@ -373749,22 +373749,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!54 &3669163640086558293
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4202058019286680128}
-  serializedVersion: 2
-  m_Mass: 1000
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!1 &6333322861272292240
 GameObject:
   m_ObjectHideFlags: 0
@@ -380563,7 +380547,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1614231711500149298}
-  - component: {fileID: 618208890214177561}
   m_Layer: 0
   m_Name: CraterQuadrant
   m_TagString: Untagged
@@ -380587,22 +380570,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &618208890214177561
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6446504321435830735}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 126
-  m_CollisionDetection: 0
 --- !u!1 &6447145650074730361
 GameObject:
   m_ObjectHideFlags: 0
@@ -542452,11 +542419,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 268ac1dd10cb5ba4ebb77f40b2ba735b, type: 3}
---- !u!1 &4202058019286680128 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7904725933647798904, guid: 268ac1dd10cb5ba4ebb77f40b2ba735b, type: 3}
-  m_PrefabInstance: {fileID: 6333063668633116728}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4202058019286680131 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7904725933647798907, guid: 268ac1dd10cb5ba4ebb77f40b2ba735b, type: 3}
