@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "5265a398-828c-01a1-8e7a-e395358965f3": {
+      "ProjectGuid": "5265a398-828c-01a1-8e7a-e395358965f3",
+      "DisplayName": "Assembly-CSharp",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Archivos varios",
+      "ColorIndex": -1
+    },
+    "2b41c7f3-31a5-e440-5848-b36ce0e8e0aa": {
+      "ProjectGuid": "2b41c7f3-31a5-e440-5848-b36ce0e8e0aa",
+      "DisplayName": "Assembly-CSharp-firstpass",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}

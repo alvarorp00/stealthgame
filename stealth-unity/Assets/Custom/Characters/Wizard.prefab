@@ -1,23 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &1685154931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8602505651297207626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b4e28cf209d70868ca7dec5678534e8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dialogue:
-    name: Jesus
-    sentences:
-    - Menos mal que has venido ...
-    - El crater que has visto es el resultado de la brutalidad con la que aterrizaron
-      unos alienigenas ...
 --- !u!1001 &8603018564205317492
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -91,8 +73,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f9527c2757f240d4092108c99f07e436, type: 3}
---- !u!1 &8602505651297207626 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1744385805961278, guid: f9527c2757f240d4092108c99f07e436, type: 3}
-  m_PrefabInstance: {fileID: 8603018564205317492}
-  m_PrefabAsset: {fileID: 0}

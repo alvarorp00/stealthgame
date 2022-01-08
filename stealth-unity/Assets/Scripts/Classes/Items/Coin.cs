@@ -2,20 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Coin : Item
+namespace Assets.Scripts
 {
-    public override Sprite GetSprite()
+    public class Coin : Item
     {
-        return ItemAssets.Instance.coinSprite;
+        public override Sprite GetSprite()
+        {
+            return ItemAssets.Instance.coinSprite;
+        }
+
+        public override bool IsStackable()
+        {
+            return true;
+        }
+
+        public override void Action()
+        {
+            Debug.Log("Monedas"); // just this
+        }
+
+        public override bool IsUsable() => false;
     }
 
-    public override bool IsStackable()
-    {
-        return true;
-    }
-
-    public override void Action()
-    {
-        Debug.Log("Monedas"); // just this
-    }
 }

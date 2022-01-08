@@ -1,27 +1,41 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AlertMessage : MonoBehaviour
+namespace Assets.Scripts
 {
-    public bool doOnce;
-
-    private bool run;
-
-    private void Awake()
+    public class AlertMessage : MonoBehaviour
     {
-        run = false;
-    }
+        public bool doOnce;
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == Player.Instance.tag)
+        private bool run;
+
+        public DialogueState DialogueState { get; private set; }
+
+        private void Awake()
         {
-            if (doOnce && !run)
+            run = false;
+        }
+
+        void OnTriggerEnter(Collider other)
+        {
+            if (other.tag == Player.Instance.tag)
             {
-                GetComponent<DialogueTrigger>().TriggerDialogue();
-                run = true;
+                if (doOnce && !run)
+                {
+                    GetComponent<DialogueTrigger>().TriggerDialogue();
+                    run = true;
+                }
+                else if (!doOnce)
+                {
+                    GetComponent<DialogueTrigger>().TriggerDialogue();
+                    run = true;
+                }
             }
         }
     }
+
+    
+
 }

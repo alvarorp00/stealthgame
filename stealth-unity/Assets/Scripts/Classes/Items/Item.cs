@@ -1,43 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Managers;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class Item: MonoBehaviour
+namespace Assets.Scripts
 {
-    public uint amount = 1;
-    [SerializeField] public AudioClip c_sound;
-
-    private void OnTriggerStay(Collider other)
+    public abstract class Item : MonoBehaviour
     {
-        if (other.tag == Player.Instance.tag)
+        public uint amount = 1;
+        [SerializeField] public AudioClip c_sound;
+
+        public string item_name;
+        public string item_description;
+
+        private void OnTriggerStay(Collider other)
         {
-            if (Input.GetKeyDown(KeyCode.T) == true)
+            if (other.tag == Player.Instance.tag)
             {
-                Item child = this.transform.GetComponent<Item>();
-                if (child != null)
+                if (Input.GetKeyDown(KeyCode.T) == true)
                 {
-                    Debug.Log("Item: " + child.name);
-                    Player.Instance.AddItem(child);
-                    this.gameObject.SetActive(false);
-                    child.gameObject.SetActive(false);
-                    GameManager.Instance.ReproduceSoundEffect(c_sound);
+                    Item child = this.transform.GetComponent<Item>();
+                    if (child != null)
+                    {
+                        Debug.Log("Item: " + child.name);
+                        Player.Instance.AddItem(child);
+                        gameObject.SetActive(false);
+                        child.gameObject.SetActive(false);
+                        GameManager.Instance.ReproduceSoundEffect(c_sound);
+                    }
                 }
             }
         }
-    }
 
-    public virtual Sprite GetSprite()
-    {
-        return null;
-    }
+        public abstract Sprite GetSprite();
 
-    public virtual bool IsStackable()
-    {
-        return false;
-    }
+        public abstract bool IsStackable();
 
-    public virtual void Action()
-    {
-        // pass;
+        public abstract bool IsUsable();
+
+        public abstract void Action();
+
+        public override int GetHashCode() => base.GetHashCode();
     }
 }

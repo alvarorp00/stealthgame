@@ -1,37 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts.Managers;
 
-public class Storer : MonoBehaviour
+namespace Assets.Scripts
 {
-    [SerializeField] protected UI_Inventory uiInventory;
-
-    protected enum StorerState { OnPlayerInventory, OnChestInventory, OnVoid };
-
-    protected Inventory inventory;
-    protected GameManager gameManager;
-
-    // Start is called before the first frame update
-    private void Awake()
-    {
-        inventory = new Inventory();
-        uiInventory.SetInventory(inventory);
-        gameManager = GameManager.Instance;
-    }
-
-    // Update is called once per frame
-    void Update()
+    public abstract class Storer : MonoBehaviour
     {
 
-    }
+        [SerializeField] public AudioClip open_sound;
+        [SerializeField] public AudioClip close_sound;
 
-    public void AddItem(Item item)
-    {
-        inventory.AddItem(item);
-    }
+        protected bool block_storer;
 
-    protected virtual void OnItemClicked()
-    {
-        // pass
+        protected Inventory inventory;
+
+        // Start is called before the first frame update
+        private void Awake()
+        {
+            block_storer = false;
+            Player.Instance.OnInventoryStateChanged += (oldSt, newSt) => block_storer = newSt == InventoryState.Opened;
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+
+        public void AddItem(Item item)
+        {
+            inventory.AddItem(item);
+        }
+
+        protected void OnOpen() => GameManager.Instance.ReproduceSoundEffect(open_sound);
+
+        protected void OnClose() => GameManager.Instance.ReproduceSoundEffect(close_sound);
     }
+    
 }

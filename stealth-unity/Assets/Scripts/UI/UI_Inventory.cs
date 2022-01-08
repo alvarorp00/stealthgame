@@ -1,100 +1,127 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Events;
 
-public class UI_Inventory : MonoBehaviour
+namespace Assets.Scripts.UI
 {
-    //private GameManager gameManager;
-    private Inventory inventory;
-    private Transform itemSlotContainer;
-    private Transform itemSlotTemplate;
-
-    private bool pendingRefresh = false;
-
-    private void Awake()
+    public class UI_Inventory : MonoBehaviour
     {
-        itemSlotContainer = transform.Find("ItemSlotContainer");
-        itemSlotTemplate  = itemSlotContainer.Find("ItemSlotTemplate");
-    }
+        //public int rows_per_column;
+        //public int max_columns;
+        public int maxGameObjects;
+        public UnityAction<Item> ItemClickedAction { get; set; }
+        public Inventory Inventory { get; private set; }
 
-    public void SetInventory(Inventory inventory)
-    {
-        this.inventory = inventory;
+        private Transform itemSlotContainer;
+        private Transform itemInfo;
 
-        inventory.OnItemSetChanged += Inventory_OnItemSetChanged;
+        private Transform[] itemSlots;
+        private long MaxItems;
 
-        RefreshInventoryItems();
-    }
+        private bool pendingRefresh = false;
 
-    public void Show(bool show)
-    {
-        this.gameObject.SetActive(show);
-        if (show && pendingRefresh)
+        private void Awake()
         {
-            RefreshInventoryItems();
-            pendingRefresh = false;
+            itemSlotContainer = transform.Find("ItemSlotContainer");
+            itemInfo = transform.Find("ItemInfo");
+            if (itemInfo != null)
+                itemInfo.gameObject.SetActive(false);
+
+            itemSlots = new Transform[maxGameObjects];
+            Transform itemSlotsBox = itemSlotContainer.Find("Slots");
+
+            uint i = 0;
+            foreach (Transform row in itemSlotsBox)
+            {
+                foreach (Transform slot in row)
+                {
+                    slot.gameObject.AddComponent<Button>();
+                    itemSlots[i++] = slot; // now we have the slots here
+                }
+            }
+            MaxItems = i;
+            //itemSlotTemplate = itemSlotContainer.Find("ItemSlotTemplate");
+            //ItemClickedAction = (Item item) => item.Action(); // by default, item action
+            ItemClickedAction = (Item item) =>
+            {
+                itemInfo.gameObject.SetActive(true);
+                itemInfo.Find("Name").GetComponent<Text>().text = item.item_name;
+                itemInfo.Find("Description").GetComponent<Text>().text = item.item_description;
+                item.Action();
+            };
         }
 
-        //Cursor.visible = show;
-    }
-
-    private void Inventory_OnItemSetChanged(object sender, System.EventArgs e)
-    {
-        pendingRefresh = true;
-    }
-
-    private void RefreshInventoryItems()
-    {
-        if (itemSlotContainer != null)
+        public void SetInventory(Inventory inventory)
         {
-            foreach (Transform child in itemSlotContainer)
+            this.Inventory = inventory;
+
+            inventory.OnItemSetChanged += Inventory_OnItemSetChanged;
+
+            //RefreshInventoryItems();
+            pendingRefresh = true;
+        }
+
+        public void Show(bool show)
+        {
+            gameObject.SetActive(show);
+            if (show && pendingRefresh)
             {
-                if (child == itemSlotTemplate) continue;
-                Destroy(child.gameObject);
+                RefreshInventoryItems();
+                pendingRefresh = false;
+            }
+
+            if (!show && itemInfo)
+            {
+                itemInfo.gameObject.SetActive(false);
             }
         }
-        else
+
+        private void Inventory_OnItemSetChanged(object sender, EventArgs e)
         {
-            Debug.Log("Warning: null container");
+            pendingRefresh = true;
         }
 
-        int x = 1;
-        int y = -1;
-        float itemSlotCellSize = 75f;
-        foreach (Item item in inventory.GetItemSet())
+        private void RefreshInventoryItems()
         {
-            RectTransform itemSlotRectTransform =  Instantiate(itemSlotTemplate, itemSlotContainer).GetComponent<RectTransform>();
+            Debug.Log("Drawing: " + gameObject.name + "@ Max items: " + MaxItems);
+            UnityAction partializedAction;
 
-            itemSlotRectTransform.gameObject.SetActive(true);
-            itemSlotRectTransform.anchoredPosition = new Vector2(x * itemSlotCellSize, y * itemSlotCellSize);
-
-            Image image = itemSlotRectTransform.Find("Image").GetComponent<Image>();
-            image.sprite = item.GetSprite();
-
-            TextMeshProUGUI uiText = itemSlotRectTransform.Find("Amount").GetComponent<TextMeshProUGUI>();
-
-            if (item.amount > 1)
-                uiText.SetText(item.amount.ToString());
-
-            Item slotItem = itemSlotRectTransform.Find("Item").GetComponent<Item>();
-            slotItem = item;
-
-            //Button button = itemSlotRectTransform.Find("Button").GetComponent<Button>();
-            //button.onClick.AddListener(() =>
-            //{
-            //    item.Action();
-            //});
-
-
-
-            x++;
-            if (x > 5) // 5 per row
+            uint draw_pos = 0;
+            foreach (Item item in Inventory.GetItemSet())
             {
-                x = 1;
-                y--;
+                Image image = itemSlots[draw_pos].Find("Image").GetComponent<Image>();
+                image.sprite = item.GetSprite();
+
+                Button button = itemSlots[draw_pos].gameObject.GetComponent<Button>();
+                //button?.onClick.AddListener(item.Action);
+                partializedAction = () => ItemClickedAction.Invoke(item);
+                button?.onClick.AddListener(partializedAction);
+
+                TextMeshProUGUI uiText = itemSlots[draw_pos].Find("Amount").GetComponent<TextMeshProUGUI>();
+
+                Item slotItem = itemSlots[draw_pos].Find("Item").GetComponent<Item>();
+                slotItem = item;
+
+                draw_pos++;
+            }
+            for (; draw_pos < MaxItems; draw_pos++)
+            { // clear sprites
+                Image image = itemSlots[draw_pos].Find("Image").GetComponent<Image>();
+                image.sprite = null;
+
+                Button button = itemSlots[draw_pos].gameObject.GetComponent<Button>();
+                button?.onClick.RemoveAllListeners();
+
+                TextMeshProUGUI uiText = itemSlots[draw_pos].Find("Amount").GetComponent<TextMeshProUGUI>();
+                uiText?.SetText(" ");
+                _ = itemSlots[draw_pos].Find("Item").GetComponent<Item>();
             }
         }
+
+        public void ForceRepaint() => RefreshInventoryItems();
     }
 }

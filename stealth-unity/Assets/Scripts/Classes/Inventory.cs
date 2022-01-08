@@ -3,42 +3,67 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory
+namespace Assets.Scripts
 {
-    public event EventHandler OnItemSetChanged;
-
-    public HashSet<Item> itemSet;
-
-    public Inventory()
+    public class Inventory
     {
-        itemSet = new HashSet<Item>();
-    }
+        public event EventHandler OnItemSetChanged;
 
-    public void AddItem(Item item)
-    {
-        if (item.IsStackable())
+        public HashSet<Item> itemSet;
+
+        public long MaxItems { get; private set; }
+        public long CurrentItems { get; private set; }
+
+        public Inventory(long MaxItems)
         {
-            bool itemInInventory = false;
-            foreach(Item invItem in itemSet)
+            itemSet = new HashSet<Item>();
+            this.MaxItems = MaxItems;
+        }
+
+        public void AddItem(Item item)
+        {
+            if (itemSet.Count >= MaxItems)
             {
-                if (invItem.GetType().Name == item.GetType().Name)
-                {
-                    invItem.amount += item.amount;
-                    itemInInventory = true;
-                }
+                Debug.Log("Inventory is full!");
             }
-            if (itemInInventory == false)
-                itemSet.Add(item);
+            else
+            {
+                Debug.Log($"adding item {item}");
+                if (item.IsStackable())
+                {
+                    bool itemInInventory = false;
+                    foreach (Item invItem in itemSet)
+                    {
+                        if (invItem.GetType().Name == item.GetType().Name)
+                        {
+                            invItem.amount += item.amount;
+                            itemInInventory = true;
+                        }
+                    }
+                    if (itemInInventory == false)
+                        itemSet.Add(item);
+                }
+                else
+                {
+                    itemSet.Add(item);
+                }
+                OnItemSetChanged?.Invoke(this, EventArgs.Empty);
+            }
         }
-        else
+
+        public bool RemoveItem(Item item)
         {
-            itemSet.Add(item);
+            bool ret = itemSet.Remove(item);
+            if (ret)
+                OnItemSetChanged?.Invoke(this,EventArgs.Empty);
+            return ret;
         }
-        OnItemSetChanged?.Invoke(this, EventArgs.Empty);
+
+        public HashSet<Item> GetItemSet()
+        {
+            return this.itemSet;
+        }
     }
 
-    public HashSet<Item> GetItemSet()
-    {
-        return this.itemSet;
-    }
+    public enum InventoryState { Opened, Closed, Wait, Block };
 }

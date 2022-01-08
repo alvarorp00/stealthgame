@@ -1,50 +1,71 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts.Managers;
+using Assets.Scripts.UI;
 
-public class Chest : Storer
+namespace Assets.Scripts
 {
-    private enum ChestState { Opened, Closed };
-    private ChestState state;
-
-    private void Awake()
+    public class Chest : Storer
     {
-        this.state = ChestState.Closed;
-        gameManager = GameManager.Instance;
-    }
+        public List<Item> items = new List<Item>();
+        public Collider object_to_raid; // check what object is going to be hit by raycast
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.E) && state == ChestState.Opened)
+        [SerializeField] public Chest_UI_Controller inventoryUIContainer;
+        [SerializeField] private UI_Inventory chestInventory;
+        [SerializeField] private UI_Inventory playerInventory;
+
+        private enum ChestState { Opened, Closed };
+        private ChestState state;
+
+        private void Awake()
         {
-            uiInventory.gameObject.SetActive(false);
-            this.state = ChestState.Closed;
+            inventory = new Inventory(chestInventory.maxGameObjects);
         }
-        //else if (Input.GetMouseButtonDown(1) && state == ChestState.Closed )
-        //{
-        //    uiInventory.gameObject.SetActive(false);
-        //    gameManager.OpenPlayerInventory();
-        //    this.state = ChestState.Opened;
-        //    print("Activated");
-        //}
-    }
 
-    void OnMouseDown()
-    {
-        //if (Input.GetMouseButtonDown(0))
-        //    Debug.Log("Left click on this object");
-        if (this.state == ChestState.Closed && Input.GetMouseButtonDown(1))
+        private void Start()
         {
-            uiInventory.gameObject.SetActive(true);
-            this.state = ChestState.Opened;
-            print("Activated");
-        }
-        //if (Input.GetMouseButtonDown(2))
-        //    Debug.Log("Middle click on this object");
-    }
+            state = ChestState.Closed;
 
-    protected override void OnItemClicked()
-    {
-        throw new System.NotImplementedException();
+            chestInventory = inventoryUIContainer.chest_inventory_ui;
+            playerInventory = inventoryUIContainer.player_inventory_ui;
+
+            chestInventory.SetInventory(inventory);
+            playerInventory.SetInventory(Player.Instance.Inventory);
+            foreach (Item item in items)
+                inventory.AddItem(item);
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            OpenOrClose(other); // separate in this way to possibly create new locked chests and that
+        }
+
+        protected void OpenOrClose(Collider other)
+        {
+            if (Player.Instance.CompareTag(other.tag) && !block_storer)
+            {
+                if (state == ChestState.Closed && Input.GetMouseButton(1) && CursorManager.ColliderWasHit(object_to_raid))
+                {
+                    OnOpen();
+                    inventoryUIContainer.SetActive(true);
+                    chestInventory.Show(true);
+                    playerInventory.Show(true);
+                    state = ChestState.Opened;
+                    GameManager.Instance.UpdateGameState(GameState.OnChest);
+                    Debug.Log("Chest opened.");
+                }
+                else if (state == ChestState.Opened && Input.GetKeyDown(KeyCode.E))
+                {
+                    OnClose();
+                    inventoryUIContainer.SetActive(false);
+                    chestInventory.Show(true);
+                    playerInventory.Show(true);
+                    this.state = ChestState.Closed;
+                    GameManager.Instance.UpdateGameState(GameState.OnPlay);
+                    Debug.Log("Chest closed.");
+                }
+            }
+        }
     }
 }

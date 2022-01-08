@@ -1,21 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts.Managers;
 
-public class Map : Item
+namespace Assets.Scripts
 {
-    public override Sprite GetSprite()
+    public class Map : Item
     {
-        return ItemAssets.Instance.mapSprite;
+        public override Sprite GetSprite()
+        {
+            return ItemAssets.Instance.mapSprite;
+        }
+
+        public override bool IsStackable()
+        {
+            return false;
+        }
+
+        public override void Action() {}
+
+        public override bool IsUsable() => true;
+
     }
 
-    public override bool IsStackable()
-    {
-        return false;
-    }
-
-    public override void Action()
-    {
-        Debug.Log("Mostrar mapa");
-    }
 }
